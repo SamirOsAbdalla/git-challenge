@@ -51,6 +51,22 @@ int main(int argc, char *argv[])
         std::string flag = argv[2];
         if (flag == "-p")
         {
+            const std::string sha = argv[3];
+            const std::string path = ".git/objects/" + sha.substr(0, 2) + "/" + sha.substr(2);
+
+            std::ifstream file(path, std::ios::binary);
+            std::vector<unsigned char> buf(std::istreambuf_iterator<char>(file), {});
+            unsigned long decompressed_size = buf.size() * 10;
+            std::vector<unsigned char> decompressed_buffer(decompressed_size);
+
+            int result = uncompress(decompressed_buffer.data(), &decompressed_size, buf.data(), buf.size());
+            if (result != Z_OK)
+            {
+                std::cerr << "Uncompression error\n";
+                return EXIT_FAILURE;
+            }
+            std::string out_str = std::string{decompressed_buffer.begin(), decompressed_buffer.begin() + decompressed_size};
+            std::cout << out_str.substr(out_str.find("\0") + 1);
         }
         else
         {
