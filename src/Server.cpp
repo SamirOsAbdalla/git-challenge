@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         if (flag == "-p")
         {
             const std::string sha = argv[3];
-            const std::string path = ".git/objects/" + sha;
+            const std::string path = ".git/objects/" + sha.substr(0, 2) + "/" + sha.substr(2);
 
             std::ofstream file(path, std::ios::binary);
             unsigned char buffer[BUFFER_SIZE];
