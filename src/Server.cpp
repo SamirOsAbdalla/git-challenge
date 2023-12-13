@@ -3,9 +3,7 @@
 #include <fstream>
 #include <string>
 #include <zlib.h>
-
-#define BUFFER_SIZE 1024
-#define DECOMPRESSED_BUFFER_SIZE 1024
+#include <vector>
 int main(int argc, char *argv[])
 {
 
@@ -55,20 +53,19 @@ int main(int argc, char *argv[])
             const std::string sha = argv[3];
             const std::string path = ".git/objects/" + sha.substr(0, 2) + "/" + sha.substr(2);
 
-            std::ofstream file(path, std::ios::binary);
-            unsigned char buffer[BUFFER_SIZE];
+            std::ifstream file(path, std::ios::binary);
+            std::vector<unsigned char> buf(std::istreambuf_iterator<char>(file), {});
+            unsigned long decompressed_size = buf.size() * 10;
+            std::vector<unsigned char> decompressed_buffer(decompressed_size);
 
-            file << buffer;
-            unsigned char decompressed_buffer[DECOMPRESSED_BUFFER_SIZE];
-            uLongf decompressed_buffer_size = DECOMPRESSED_BUFFER_SIZE;
-            int result = uncompress(decompressed_buffer, &decompressed_buffer_size, buffer, BUFFER_SIZE);
+            int result = uncompress(decompressed_buffer.data(), &decompressed_size, buf.data(), buf.size());
             if (result != Z_OK)
             {
-                std::cerr << "Uncompression Error\n";
+                std::cerr << "Uncompression error\n";
                 return EXIT_FAILURE;
             }
-
-            std::cout.write(reinterpret_cast<const char *>(decompressed_buffer), decompressed_buffer_size);
+            std::string out_str = std::string{decompressed_buffer.begin(), decompressed_buffer.begin() + decompressed_size};
+            std::cout << out_str.substr(out_str.find("\0") + 1);
         }
         else
         {
