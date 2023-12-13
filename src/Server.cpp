@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
             unsigned long decompressed_size = buf.size() * 10;
             std::vector<unsigned char> decompressed_buffer(decompressed_size);
 
-            int result = uncompress(decompressed_buffer.data(), &decompressed_size, buf.data(), buf.size());
+            int result = uncompress((Bytef *)decompressed_buffer.data(), &decompressed_size, (Bytef *)buf.data(), buf.size());
             if (result != Z_OK)
             {
                 std::cerr << "Uncompression error\n";
