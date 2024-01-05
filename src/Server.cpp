@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
         std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(inputStream), {});
 
-        uLongf decompressedBufferSize = buffer.size() * 10;
+        uLongf decompressedBufferSize;
         std::vector<unsigned char> decompressedBuffer(buffer.size() * 10);
 
         int result = uncompress((Bytef *)decompressedBuffer.data(), &decompressedBufferSize, (Bytef *)buffer.data(), BUFFER_SIZE);
