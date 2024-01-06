@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     }
     else if (command == "cat-file" && argc == 4)
     {
-        if (argv[2] != "-p")
+        std::string flag = argv[2];
+        if (flag != "-p")
         {
             std::cerr << "Invalid flag to cat-file\n";
             return EXIT_FAILURE;
