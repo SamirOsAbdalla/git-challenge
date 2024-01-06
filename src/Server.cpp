@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
     }
-    else if (argv[1] == "cat-file" && argc == 4)
+    else if (command == "cat-file" && argc == 4)
     {
         if (argv[2] != "-p")
         {
