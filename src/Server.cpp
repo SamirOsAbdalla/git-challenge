@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     {
         if (argv[2] != "-p")
         {
-            std::cerr << "Invalid flag\n";
+            std::cerr << "Invalid flag to cat-file\n";
             return EXIT_FAILURE;
         }
 
