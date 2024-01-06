@@ -34,7 +34,7 @@ int handleCatFileCommand(std::string flag, std::string blobSha)
     std::string out_str = std::string(decompressedBuffer.begin(), decompressedBuffer.begin() + decompressedBufferSize);
     std::cout << out_str.substr(out_str.find('\0') + 1);
 
-    return EXIT_SUCCESS
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char *argv[])
