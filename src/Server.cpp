@@ -7,6 +7,36 @@
 #include <zlib.h>
 
 #define BUFFER_SIZE 4096
+
+int handleCatFileCommand(std::string flag, std::string blobSha)
+{
+    if (flag != "-p")
+    {
+        std::cerr << "Invalid flag to cat-file\n";
+        return EXIT_FAILURE;
+    }
+
+    const std::string path = ".git/objects/" + blobSha.substr(0, 2) + "/" + blobSha.substr(2);
+    std::ifstream inputStream(path, std::ios::binary);
+
+    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(inputStream), {});
+
+    uLongf decompressedBufferSize = buffer.size() * 3;
+    std::vector<unsigned char> decompressedBuffer(buffer.size() * 10);
+
+    int result = uncompress((Bytef *)decompressedBuffer.data(), &decompressedBufferSize, (Bytef *)buffer.data(), BUFFER_SIZE);
+    if (result != Z_OK)
+    {
+        std::cerr << "Error uncompressing";
+        return EXIT_FAILURE;
+    }
+
+    std::string out_str = std::string(decompressedBuffer.begin(), decompressedBuffer.begin() + decompressedBufferSize);
+    std::cout << out_str.substr(out_str.find('\0') + 1);
+
+    return EXIT_SUCCESS
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -50,31 +80,11 @@ int main(int argc, char *argv[])
     }
     else if (command == "cat-file" && argc == 4)
     {
-        std::string flag = argv[2];
-        if (flag != "-p")
+        int res = handleCatFileCommand(argv[2], argv[3]);
+        if (res != EXIT_SUCCESS)
         {
-            std::cerr << "Invalid flag to cat-file\n";
-            return EXIT_FAILURE;
+            std::cerr << "Error in cat-file command";
         }
-
-        const std::string blobSha = argv[3];
-        const std::string path = ".git/objects/" + blobSha.substr(0, 2) + "/" + blobSha.substr(2);
-        std::ifstream inputStream(path, std::ios::binary);
-
-        std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(inputStream), {});
-
-        uLongf decompressedBufferSize = buffer.size() * 3;
-        std::vector<unsigned char> decompressedBuffer(buffer.size() * 10);
-
-        int result = uncompress((Bytef *)decompressedBuffer.data(), &decompressedBufferSize, (Bytef *)buffer.data(), BUFFER_SIZE);
-        if (result != Z_OK)
-        {
-            std::cerr << "Error uncompressing";
-            return EXIT_FAILURE;
-        }
-
-        std::string out_str = std::string(decompressedBuffer.begin(), decompressedBuffer.begin() + decompressedBufferSize);
-        std::cout << out_str.substr(out_str.find('\0') + 1);
     }
     else
     {
