@@ -8,13 +8,8 @@
 
 #define BUFFER_SIZE 4096
 
-int handleCatFileCommand(std::string flag, std::string blobSha)
+int handleCatFileCommand(std::string blobSha)
 {
-    if (flag != "-p")
-    {
-        std::cerr << "Invalid flag to cat-file\n";
-        return EXIT_FAILURE;
-    }
 
     const std::string path = ".git/objects/" + blobSha.substr(0, 2) + "/" + blobSha.substr(2);
     std::ifstream inputStream(path, std::ios::binary);
@@ -80,10 +75,22 @@ int main(int argc, char *argv[])
     }
     else if (command == "cat-file" && argc == 4)
     {
-        int res = handleCatFileCommand(argv[2], argv[3]);
-        if (res != EXIT_SUCCESS)
+        std::string flag = argv[2];
+        if (flag != "-p")
         {
-            std::cerr << "Error in cat-file command";
+            std::cerr << "Invalid flag to cat-file\n";
+            return EXIT_FAILURE;
+        }
+
+        handleCatFileCommand(argv[3]);
+    }
+    else if (command == "hash-object" && argc == 4)
+    {
+        std::string flag = argv[2];
+        if (flag != "-w")
+        {
+            std::cerr << "Invalid flag to hash-object\n";
+            return EXIT_FAILURE;
         }
     }
     else
